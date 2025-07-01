@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+*.log
+.env
+dbt/target/
+dbt/dbt_modules/
+terraform/.terraform/
+terraform/terraform.tfstate*
