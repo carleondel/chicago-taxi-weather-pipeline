@@ -7,3 +7,4 @@ dbt/target/
 dbt/dbt_modules/
 terraform/.terraform/
 terraform/terraform.tfstate*
+*.json
