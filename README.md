@@ -25,32 +25,47 @@ The mayor of Chicago assumes that the weather conditions affect the duration of 
 - **dbt** to transform data into staging and marts layers.
 - **Cloud Composer (Airflow)** to orchestrate the daily ingestion pipeline.
 - **Looker Studio** for data visualization.
+- **GitHub Actions** for CI/CD.
 
 ## Project Structure
 
 ```
 chicago-taxi-weather-pipeline/
 │
-├── README.md
-├── .gitignore
 │
 ├── terraform/
 │   ├── main.tf
 │   ├── variables.tf
-│   ├── outputs.tf
+│   ├── terraform.tfvars
+│   └── outputs.tf
 │
 ├── dags/
-│   ├── ingest_weather_dag.py
+│   └── ingest_weather_dag.py
 │
 ├── scripts/
-│   ├── download_weather.py
+│   └── historical_weather.py
 │
 ├── dbt/
-│   ├── chicago_taxi_weather/
+│   ├── dbt_project.yml
+│   ├── profiles.yml
+│   ├── analyses/
+│   ├── macros/
+│   ├── seeds/
+│   ├── snapshots/
+│   ├── tests/
+│   └── models/
+│       ├── staging/
+│       │   ├── stg_chicago_taxi_trips.sql
+│       │   ├── stg_weather.sql
+│       │   └── schema.yml
+│       └── marts/
+│           ├── mart_trips_weather.sql
+│           └── schema.yml
 │
 ├── .github/
-│    ├── workflows/
-│         ├── deploy.yml
+│    └── workflows/
+│         └── deploy.yml
+└── README.md
 ```
 
 ## How to Run Locally
@@ -69,24 +84,20 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-On Windows:
-```
-venv\Scripts\activate
-```
-
 ### 3. Install dependencies
 
 ```
 pip install -r requirements.txt
 ```
 
-### 4. Run Python script
+### 4. Run historical weather download script
 
 ```
-python scripts/download_weather.py
+python scripts/historical_weather.py
 ```
 
-This will download the weather data for the previous day and save it as a JSON file locally.
+This will download historical weather data from Open-Meteo and save it as a Parquet file locally.
+
 
 ## Terraform
 
@@ -118,8 +129,13 @@ Edit your `profiles.yml` to include your GCP project ID and service account JSON
 ### Run dbt models
 
 ```
-cd dbt/chicago_taxi_weather
+cd dbt
 dbt run
+```
+### Run dbt tests
+
+```
+dbt test
 ```
 
 ## Airflow (Cloud Composer)
@@ -139,10 +155,25 @@ Looker Studio will be connected to the BigQuery `marts` layer to visualize:
 - Average trip duration vs. precipitation.
 - Trends over time.
 
+## CI/CD
+
+The pipeline includes GitHub Actions to:
+
+- Validate Terraform syntax and plans.
+- Run dbt build and tests.
+
 ## To-Do
 
-- Create Terraform resources for BigQuery datasets and GCS buckets.
-- Finalize dbt models for staging and marts layers.
-- Integrate Airflow DAG with GCS and BigQuery.
-- Build Looker Studio dashboard.
-- Implement column-level security for `payment_type` if required.
+- [ ] Implement Airflow DAG to automate daily weather ingestion.
+- [ ] Complete Looker Studio dashboard.
+- [ ] Implement column-level security for `payment_type`.
+- [ ] Refactor CI/CD pipeline for deployments and tests.
+
+---
+## Optional: Column-Level Security
+
+To restrict access to the `payment_type` column, implement BigQuery column-level access policies or use authorized views that exclude this column for non-authorized users.
+
+---
+
+**Note:** Parquet files generated locally (e.g. `historical_weather_2023.parquet`) are ignored from version control and must be uploaded to GCS for BigQuery ingestion.
