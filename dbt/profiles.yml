@@ -5,8 +5,8 @@ chicago_taxi_weather:
       type: bigquery
       method: service-account
       project: chicago-taxi-weather
-      dataset: staging
+      dataset: ctw
       keyfile: /home/carleondel/.gcp/chicago-taxi-weather-661d0d5aea6a.json
       threads: 1
       timeout_seconds: 300
-      location: US
+      location: us-central1

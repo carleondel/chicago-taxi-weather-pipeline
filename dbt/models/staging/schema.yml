@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: stg_chicago_taxi_trips
+    description: "Staging table for Chicago taxi trips June-December 2023"
+    columns:
+      - name: trip_id
+        description: "Unique trip identifier"
+        tests:
+          - not_null
+          - unique
+
+      - name: taxi_id
+        description: "Unique taxi identifier"
+      - name: trip_start_timestamp
+        description: "Start timestamp of the trip"
+      - name: trip_end_timestamp
+        description: "End timestamp of the trip"
+      - name: trip_seconds
+        description: "Duration of the trip in seconds"
+      - name: trip_miles
+        description: "Distance of the trip in miles"
+      - name: pickup_census_tract
+        description: "Census tract of pickup location"
+      - name: dropoff_census_tract
+        description: "Census tract of dropoff location"
+      - name: pickup_community_area
+        description: "Community area code of pickup"
+      - name: dropoff_community_area
+        description: "Community area code of dropoff"
+      - name: fare
+        description: "Fare amount in USD"
+      - name: tips
+        description: "Tip amount in USD"
+      - name: tolls
+        description: "Tolls amount in USD"
+      - name: extras
+        description: "Additional charges (extras) in USD"
+      - name: trip_total
+        description: "Total trip cost in USD"
+      - name: payment_type
+        description: "Payment method used"
+      - name: company
+        description: "Taxi company name"
+      - name: pickup_centroid_latitude
+        description: "Latitude of pickup location centroid"
+      - name: pickup_centroid_longitude
+        description: "Longitude of pickup location centroid"
+      - name: pickup_centroid_location
+        description: "Geopoint of pickup location centroid"
+      - name: dropoff_centroid_latitude
+        description: "Latitude of dropoff location centroid"
+      - name: dropoff_centroid_longitude
+        description: "Longitude of dropoff location centroid"
+      - name: dropoff_centroid_location
+        description: "Geopoint of dropoff location centroid"
+
+  - name: stg_weather
+    description: "Staging table for historical weather data for Chicago"
+    columns:
+      - name: date
+        description: "Date of weather data"
+      - name: temperature_2m_max
+        description: "Maximum daily temperature in °C"
+      - name: temperature_2m_min
+        description: "Minimum daily temperature in °C"
+      - name: precipitation_sum
+        description: "Total daily precipitation in mm"

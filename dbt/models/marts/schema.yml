@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: mart_trips_weather
+    description: "Mart table joining taxi trips and weather data"
+    columns:
+      - name: date
+        description: "Date"
+        tests:
+          - not_null
+
+      - name: avg_trip_miles
+        description: "Average trip distance in miles"
+      - name: avg_trip_duration_min
+        description: "Average trip duration in minutes"
+      - name: avg_trip_total
+        description: "Average trip total cost in USD"
+      - name: trip_count
+        description: "Total number of trips on that date"
+      - name: temperature_2m_max
+        description: "Maximum daily temperature in °C"
+      - name: temperature_2m_min 
+        description: "Minimum daily temperature in °C"
+      - name: precipitation_sum
+        description: "Total daily precipitation in mm"
