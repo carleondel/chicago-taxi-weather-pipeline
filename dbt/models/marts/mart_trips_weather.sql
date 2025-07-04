@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='incremental',
+    unique_key='date'
+) }}
 
 WITH trips AS (
     SELECT
@@ -32,3 +35,7 @@ SELECT
 FROM trips t
 LEFT JOIN weather w
     ON t.date = w.date
+
+{% if is_incremental() %}
+WHERE t.date > (SELECT MAX(date) FROM {{ this }})
+{% endif %}

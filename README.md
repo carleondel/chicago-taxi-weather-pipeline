@@ -19,6 +19,9 @@ The mayor of Chicago assumes that the weather conditions affect the duration of 
 
 ## Architecture Overview
 
+![Architecture Diagram](images/chicago-taxi-weather.drawio.png)
+
+
 - **Terraform** for infrastructure-as-code.
 - **Google Cloud Storage (GCS)** as the landing zone for raw weather data.
 - **BigQuery** as the data warehouse for both taxi trips and weather data.
@@ -177,3 +180,18 @@ To restrict access to the `payment_type` column, implement BigQuery column-level
 ---
 
 **Note:** Parquet files generated locally (e.g. `historical_weather_2023.parquet`) are ignored from version control and must be uploaded to GCS for BigQuery ingestion.
+
+---
+
+## Looker Studio
+
+Looker Studio connects directly to the BigQuery marts layer:
+
+- Dataset: chicago-taxi-weather.ctw_marts
+- Table: mart_trips_weather
+
+Available visualizations:
+
+- Average trip duration vs. temperature.
+- Average trip duration vs. precipitation.
+- Trends over time.

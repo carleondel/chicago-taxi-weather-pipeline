@@ -38,6 +38,19 @@ resource "google_bigquery_dataset" "marts" {
 #
 #  config {
 #    node_count = 3
+#
+#    software_config {
+#      image_version = "composer-2.3.5-airflow-2.7.3"
+#      python_version = "3"
+#      env_variables = {
+#        AIRFLOW_VAR_PROJECT_ID = var.project_id
+#      }
+#      pypi_packages = {
+#        "apache-airflow-providers-google" = ""
+#        "pandas" = ""
+#        "requests" = ""
+#      }
+#    }
 #  }
 #}
 
