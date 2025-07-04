@@ -12,6 +12,7 @@ terraform/terraform.tfstate*
 
 *.parquet
 *.json
+*.Identifier
 .gcp/
 
 # dbt

@@ -19,14 +19,14 @@ The mayor of Chicago assumes that the weather conditions affect the duration of 
 
 ## Architecture Overview
 
-![Architecture Diagram](images/chicago-taxi-weather.drawio.png)
+![Architecture Diagram](images/chicago-taxi-weather.png)
 
 
 - **Terraform** for infrastructure-as-code.
 - **Google Cloud Storage (GCS)** as the landing zone for raw weather data.
 - **BigQuery** as the data warehouse for both taxi trips and weather data.
 - **dbt** to transform data into staging and marts layers.
-- **Cloud Composer (Airflow)** to orchestrate the daily ingestion pipeline.
+- **Cloud Functions** to orchestrate the daily ingestion pipeline.
 - **Looker Studio** for data visualization.
 - **GitHub Actions** for CI/CD.
 
@@ -141,9 +141,9 @@ dbt run
 dbt test
 ```
 
-## Airflow (Cloud Composer)
+## Cloud Functions
 
-The Airflow DAG `ingest_weather_dag.py` performs the following tasks:
+The DAG `ingest_weather_dag.py` performs the following tasks:
 
 - Downloads daily weather data from the Open-Meteo API.
 - Uploads raw data to GCS.
@@ -167,13 +167,13 @@ The pipeline includes GitHub Actions to:
 
 ## To-Do
 
-- [ ] Implement Airflow DAG to automate daily weather ingestion.
+
 - [ ] Complete Looker Studio dashboard.
 - [ ] Implement column-level security for `payment_type`.
 - [ ] Refactor CI/CD pipeline for deployments and tests.
 
 ---
-## Optional: Column-Level Security
+## Column-Level Security
 
 To restrict access to the `payment_type` column, implement BigQuery column-level access policies or use authorized views that exclude this column for non-authorized users.
 
