@@ -1,0 +1,41 @@
+name: Terraform
+
+on:
+  push:
+    branches:
+      - main
+# this workflow runs on every push to the main branch
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    # the job runs on a Ubuntu virtual machine by github
+
+    env:
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      # this environment variable is used by the terraform provider to authenticate with GCP
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: cd terraform && terraform init
+       # initializes the Terraform working directory
+
+      - name: Terraform Format
+        run: cd terraform && terraform fmt -check
+       # checks if the Terraform files are formatted correctly
+
+      - name: Terraform Validate
+        run: cd terraform && terraform validate
+       # validates the Terraform files
+
+      - name: Terraform Plan
+        run: cd terraform && terraform plan -var-file="terraform.tfvars"
+       # shows the plan of the changes that sould be applied to the infrastructure
