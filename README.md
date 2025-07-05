@@ -42,8 +42,9 @@ chicago-taxi-weather-pipeline/
 │   ├── terraform.tfvars
 │   └── outputs.tf
 │
-├── dags/
-│   └── ingest_weather_dag.py
+├── cloud_functions/
+│   ├── main.py
+│   └── requirements.txt
 │
 ├── scripts/
 │   └── historical_weather.py
@@ -99,7 +100,7 @@ pip install -r requirements.txt
 python scripts/historical_weather.py
 ```
 
-This will download historical weather data from Open-Meteo and save it as a Parquet file locally.
+This downloads historical weather data from Open-Meteo and saves it as a Parquet file locally.
 
 
 ## Terraform
@@ -123,7 +124,39 @@ terraform plan -var-file="terraform.tfvars"
 terraform apply -var-file="terraform.tfvars"
 ```
 
+---
+
+## Cloud Function Deployment
+
+The weather ingestion pipeline is implemented as a 2nd-gen Google Cloud Function. The function:
+
+- Calls the Open-Meteo API
+- Generates a Parquet file
+- Uploads it to GCS
+- Loads it into BigQuery (using WRITE_APPEND mode)
+
+The function runs daily via Cloud Scheduler:
+
+```bash
+gcloud scheduler jobs create http weather-daily \
+    --schedule="0 7 * * *" \
+    --http-method=GET \
+    --uri=https://us-central1-chicago-taxi-weather.cloudfunctions.net/ingest_weather \
+    --time-zone="America/Chicago" \
+    --location=us-central1
+```
+
+Note: The raw.weather table uses an append-only pattern. To avoid duplicate rows on repeated ingestion of the same date, a future enhancement could include deleting existing rows for the given date before loading new data.
+
+---
+
 ## dbt
+
+dbt is used to transform raw data into staging and marts layers. The mart is incremental:
+
+- materialized as `incremental`
+- using `date` as the unique key
+- ensuring only new data is processed each run
 
 ### Initialize dbt profiles
 
@@ -131,32 +164,31 @@ Edit your `profiles.yml` to include your GCP project ID and service account JSON
 
 ### Run dbt models
 
-```
+```bash
 cd dbt
 dbt run
 ```
+
 ### Run dbt tests
 
-```
+```bash
 dbt test
 ```
 
-## Cloud Functions
-
-The DAG `ingest_weather_dag.py` performs the following tasks:
-
-- Downloads daily weather data from the Open-Meteo API.
-- Uploads raw data to GCS.
-- Loads data into BigQuery.
-- Runs dbt transformations.
-
 ## Looker Studio
 
-Looker Studio will be connected to the BigQuery `marts` layer to visualize:
+Looker Studio connects directly to the BigQuery marts layer:
 
-- Average trip duration vs. temperature.
-- Average trip duration vs. precipitation.
-- Trends over time.
+- Dataset: `chicago-taxi-weather.ctw_marts`
+- Table: `mart_trips_weather`
+
+Recommended visualizations:
+
+- Average trip duration vs. temperature
+- Average trip duration vs. precipitation
+- Trends over time
+
+---
 
 ## CI/CD
 
@@ -165,33 +197,32 @@ The pipeline includes GitHub Actions to:
 - Validate Terraform syntax and plans.
 - Run dbt build and tests.
 
-## To-Do
+---
 
+## To-Do
 
 - [ ] Complete Looker Studio dashboard.
 - [ ] Implement column-level security for `payment_type`.
 - [ ] Refactor CI/CD pipeline for deployments and tests.
 
 ---
+
 ## Column-Level Security
 
 To restrict access to the `payment_type` column, implement BigQuery column-level access policies or use authorized views that exclude this column for non-authorized users.
 
 ---
 
-**Note:** Parquet files generated locally (e.g. `historical_weather_2023.parquet`) are ignored from version control and must be uploaded to GCS for BigQuery ingestion.
+# Future Automation
+
+In the future, dbt can be automated using Cloud Run Jobs
+
+1. Build a Docker image with dbt installed and the project code.
+2. Deploy it as a Cloud Run Job.
+3. Trigger the job daily via Cloud Scheduler.
+
+This provides a lightweight and cost-effective solution for orchestrating dbt pipelines in production.
 
 ---
 
-## Looker Studio
-
-Looker Studio connects directly to the BigQuery marts layer:
-
-- Dataset: chicago-taxi-weather.ctw_marts
-- Table: mart_trips_weather
-
-Available visualizations:
-
-- Average trip duration vs. temperature.
-- Average trip duration vs. precipitation.
-- Trends over time.
+**Note:** Parquet files generated locally (e.g. `historical_weather_2023.parquet`) are ignored from version control and must be uploaded to GCS for BigQuery ingestion.
