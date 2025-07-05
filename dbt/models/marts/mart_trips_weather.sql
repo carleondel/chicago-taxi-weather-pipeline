@@ -1,3 +1,6 @@
+-- I'll leave it as incremental so it can be scaled in the future.
+-- since stg_chicago_taxi_trips data doesn't contain new trips, this model is not adding new rows by now.
+
 {{ config(
     materialized='incremental',
     unique_key='date'
@@ -33,7 +36,7 @@ SELECT
     w.temperature_2m_min,
     w.precipitation_sum
 FROM trips t
-LEFT JOIN weather w
+LEFT JOIN weather w 
     ON t.date = w.date
 
 {% if is_incremental() %}

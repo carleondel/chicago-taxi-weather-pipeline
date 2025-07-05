@@ -6,7 +6,7 @@ import os
 
 def ingest_weather(request):
     try:
-        yesterday = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d")
+        yesterday = (datetime.utcnow() - timedelta(days=2)).strftime("%Y-%m-%d") # Get the day before yesterday's date in UTC so the API returns data
         #yesterday = "2025-07-01"    # For testing purposes, set a fixed date
 
         print(f"Yesterday = {yesterday}")
