@@ -9,9 +9,9 @@
 WITH trips AS (
     SELECT
         DATE(trip_start_timestamp) AS date,
-        AVG(trip_seconds) / 60 AS avg_trip_duration_min,
-        AVG(trip_total) AS avg_trip_total,
-        AVG(trip_miles) AS avg_trip_miles,
+        ROUND(AVG(trip_seconds) / 60 , 1) AS avg_trip_duration_min,
+        ROUND(AVG(trip_total), 1) AS avg_trip_total,
+        ROUND(AVG(trip_miles), 1) AS avg_trip_miles,
         COUNT(*) AS trip_count
     FROM {{ ref('stg_chicago_taxi_trips') }}
     GROUP BY date

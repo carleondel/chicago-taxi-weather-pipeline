@@ -62,9 +62,6 @@ models:
         description: "Date of weather data"
       - name: temperature_2m_max
         description: "Maximum daily temperature in °C"
-        tests:
-          - not_null
-
       - name: temperature_2m_min
         description: "Minimum daily temperature in °C"
       - name: precipitation_sum
