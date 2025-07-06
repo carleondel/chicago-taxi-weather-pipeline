@@ -16,7 +16,7 @@ The Mayor of Chicago suspects that weather conditions might affect the duration 
 
 ## Architecture Overview
 
-![Architecture Diagram](images/chicago-taxi-weather.png)
+![Architecture Diagram](images/chicago-taxi-weather-white.png)
 
 - **Terraform** for infrastructure-as-code.
 - **Google Cloud Storage (GCS)** as the landing zone for raw weather data.
